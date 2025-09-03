@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
 import subscriptionRoutes from './routes/subscription.routes';
+import connectToDatabase from './databases/mongodb';
 
 const app = new Hono()
 const port = Bun.env.PORT || 3000;
@@ -14,11 +15,13 @@ app.get('/', (c) => {
   return c.text('Welcome to the Subscription Tracker API!')
 })
 
-const server = Bun.serve({
+connectToDatabase().then(() => {
+  const server = Bun.serve({
   port: port,
   fetch: app.fetch
 })
-
-
-
-console.log(`Server is running on "${server.hostname}:${server.port}" in ${Bun.env.NODE_ENV} mode! 🚀`);
+  console.log(`Server is running on "${server.hostname}:${server.port}" in ${Bun.env.NODE_ENV} mode! 🚀`);
+}).catch((error) => {
+  console.error("Error connecting to database:", error);
+  process.exit(1);
+});
