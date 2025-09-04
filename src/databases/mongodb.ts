@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const nodeEnv = Bun.env.NODE_ENV;
-const dbUri = Bun.env.DB_URI;
+const dbUri = Bun.env.MONGODB_URI;
 
 if (!dbUri) {
   throw new Error(`Please provide a valid DB_URI inside .env.${nodeEnv}.local`);
