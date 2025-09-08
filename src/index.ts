@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
-import authRoutes from './routes/auth.routes';
-import userRoutes from './routes/user.routes';
-import subscriptionRoutes from './routes/subscription.routes';
-import connectToDatabase from './databases/mongodb';
+import authRoutes from './api/auth/auth.routes';
+import userRoutes from './api/users/user.routes';
+import subscriptionRoutes from './api/subscriptions/subscription.routes';
+import connectToDatabase from './api/core/mongodb';
 
 const app = new Hono()
 const port = Bun.env.PORT || 3000;
