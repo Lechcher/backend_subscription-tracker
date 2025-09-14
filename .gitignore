@@ -4,3 +4,7 @@ node_modules/
 # env
 .env
 .env.*.local
+
+# lock files
+package-lock.json
+bun.lock

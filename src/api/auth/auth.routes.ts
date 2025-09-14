@@ -1,23 +1,12 @@
-import { Hono } from 'hono';
+import { Hono } from "hono";
+import { signIn, signUp, signOut } from "./auth.controller";
 
 const authRoutes = new Hono();
 
-authRoutes.post('/sign-up', (c) => {
-    return c.json({
-        message: 'Sign Up',
-    })
-})
+authRoutes.post("/sign-up", signUp);
 
-authRoutes.post("/sign-in", (c) => {
-    return c.json({
-        message: 'Sign Up',
-    })
-})
+authRoutes.post("/sign-in", signIn);
 
-authRoutes.post("/sign-out", (c) => {
-    return c.json({
-        message: 'Sign Out',
-    })
-})
+authRoutes.post("/sign-out", signOut);
 
 export default authRoutes;
