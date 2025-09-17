@@ -1,10 +1,12 @@
 import { type Context } from "hono";
 import mongoose from "mongoose";
 import User from "../users/user.model";
-import { handlerError } from "../core/handleError";
+import { HandlerError } from "../core/handlerError";
 import { sign } from "hono/jwt";
 
-const JWT_SECRET = Bun.env.JWT_SECRET;
+// JWT secret key from environment variables or default to "secret"
+const JWT_SECRET = Bun.env.JWT_SECRET || "secret";
+// JWT expiration time from environment variables or default to "1d"
 const JWT_EXPIRES_IN = Bun.env.JWT_EXPIRES_IN || "1d";
 
 // Calculate expiration time in seconds since epoch
@@ -13,40 +15,47 @@ const expiresInSeconds =
     ? Math.floor(Date.now() / 1000) + parseInt(JWT_EXPIRES_IN) * 24 * 60 * 60
     : Math.floor(Date.now() / 1000) + 24 * 60 * 60; // default 1 day
 
-if (!JWT_SECRET) {
-  throw new handlerError("JWT_SECRET is not defined", 500);
-}
-
+/**
+ * Handles user registration (sign up)
+ * @param c - Hono context object containing request and response
+ * @returns JSON response with success status, message, token, and user data
+ */
 export const signUp = async (c: Context) => {
-  const sesseion = await mongoose.startSession();
-  sesseion.startTransaction();
+  // Start MongoDB session for transaction
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
   try {
+    // Extract user data from request body
     const { name, email, password } = await c.req.json();
 
     // Check if user already exists
-    const exirstingUser = await User.findOne({ email }).session(sesseion);
+    const exirstingUser = await User.findOne({ email }).session(session);
 
     if (exirstingUser) {
-      throw new handlerError("User already exists", 409);
+      throw new HandlerError("User already exists", 409);
     }
 
-    // Hash password
+    // Hash password using Bun's built-in password hashing
     const hashedPassword = await Bun.password.hash(password);
 
+    // Create new user within transaction
     const newUsers = await User.create(
       [{ name, email, password: hashedPassword }],
-      { session: sesseion }
+      { session: session }
     );
 
     const newUser = newUsers[0];
 
+    // Create JWT payload with user ID and expiration time
     const payload = { userId: newUser?._id, exp: expiresInSeconds };
     const token = await sign(payload, JWT_SECRET);
 
-    await sesseion.commitTransaction();
-    sesseion.endSession();
+    // Commit transaction and end session
+    await session.commitTransaction();
+    session.endSession();
 
+    // Return success response with token and user data
     return c.json(
       {
         success: true,
@@ -59,44 +68,66 @@ export const signUp = async (c: Context) => {
       201
     );
   } catch (error) {
-    await sesseion.abortTransaction();
+    // Abort transaction if error occurs
+    await session.abortTransaction();
     throw error;
   } finally {
-    sesseion.endSession();
+    // Ensure session is ended
+    session.endSession();
   }
 };
 
+/**
+ * Handles user login (sign in)
+ * @param c - Hono context object containing request and response
+ * @returns JSON response with success status, message, token, and user data
+ */
 export const signIn = async (c: Context) => {
+  // Extract email and password from request body
   const { email, password } = await c.req.json();
 
   try {
+    // Find user by email
     const user = await User.findOne({ email });
 
     if (!user) {
-      throw new handlerError("User not found", 401);
+      throw new HandlerError("User not found", 404);
     }
 
+    // Verify password
     const isPasswordValid = await Bun.password.verify(password, user.password);
 
     if (!isPasswordValid) {
-      throw new handlerError("Invalid password", 401);
+      throw new HandlerError("Invalid password", 401);
     }
 
+    // Create JWT payload with user ID and expiration time
     const payload = { userId: user._id, exp: expiresInSeconds };
 
+    // Generate JWT token
     const token = await sign(payload, JWT_SECRET);
 
-    return c.json({
-      success: true,
-      message: "User signed in successfully",
-      data: {
-        token,
-        user,
+    // Return success response with token and user data
+
+    return c.json(
+      {
+        success: true,
+        message: "User signed in successfully",
+        data: {
+          token,
+          user,
+        },
       },
-    });
+      200
+    );
   } catch (error) {
     throw error;
   }
 };
 
+/**
+ * Handles user logout (sign out)
+ * Currently empty - implementation would typically involve invalidating the token
+ * @param c - Hono context object containing request and response
+ */
 export const signOut = async (c: Context) => {};

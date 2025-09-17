@@ -7,7 +7,7 @@ import { registerErrorHandler } from "./middlewares/error.middleware";
 import { prettyJSON } from "hono/pretty-json";
 
 const app = new Hono();
-const port = Bun.env.PORT || 3000;
+const PORT = Bun.env.PORT || 3000;
 
 registerErrorHandler(app);
 
@@ -24,7 +24,7 @@ app.get("/", (c) => {
 connectToDatabase()
   .then(() => {
     const server = Bun.serve({
-      port: port,
+      port: PORT,
       fetch: app.fetch,
     });
     console.log(
