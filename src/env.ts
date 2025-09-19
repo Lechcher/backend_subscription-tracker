@@ -1,0 +1,8 @@
+const NODE_ENV = Bun.env.NODE_ENV;
+const PORT = Bun.env.PORT;
+const MONGODB_URI = Bun.env.MONGODB_URI;
+const JWT_SECRET = Bun.env.JWT_SECRET;
+const JWT_EXPIRES_IN = Bun.env.JWT_EXPIRES_IN;
+const ARCJET_KEY = Bun.env.ARCJET_KEY;
+
+export { NODE_ENV, PORT, MONGODB_URI, JWT_SECRET, JWT_EXPIRES_IN, ARCJET_KEY };

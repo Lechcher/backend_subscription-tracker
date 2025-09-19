@@ -1,9 +1,9 @@
-import { Context } from "hono";
+import { type Context } from "hono";
 import User from "./user.model";
 
-export const getUsers = (c: Context) => {
+export const getUsers = async (c: Context) => {
   try {
-    const users = User.find();
+    const users = await User.find();
 
     return c.json(
       {
@@ -17,9 +17,9 @@ export const getUsers = (c: Context) => {
   }
 };
 
-export const getUser = (c: Context) => {
+export const getUser = async (c: Context) => {
   try {
-    const user = User.findById(c.req.param("id")).select("-password");
+    const user = await User.findById(c.req.param("id")).select("-password");
 
     return c.json(
       {

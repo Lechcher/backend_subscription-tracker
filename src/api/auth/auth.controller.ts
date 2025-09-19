@@ -3,11 +3,14 @@ import mongoose from "mongoose";
 import User from "../users/user.model";
 import { HandlerError } from "../core/handlerError";
 import { sign } from "hono/jwt";
+import { JWT_SECRET, JWT_EXPIRES_IN, NODE_ENV } from "../../env";
 
-// JWT secret key from environment variables or default to "secret"
-const JWT_SECRET = Bun.env.JWT_SECRET || "secret";
-// JWT expiration time from environment variables or default to "1d"
-const JWT_EXPIRES_IN = Bun.env.JWT_EXPIRES_IN || "1d";
+if (!JWT_SECRET) {
+  throw new HandlerError(
+    `JWT_SECRET is not defined, please insert into .env or .env.${NODE_ENV}.local`,
+    500
+  );
+}
 
 // Calculate expiration time in seconds since epoch
 const expiresInSeconds =
@@ -49,7 +52,8 @@ export const signUp = async (c: Context) => {
 
     // Create JWT payload with user ID and expiration time
     const payload = { userId: newUser?._id, exp: expiresInSeconds };
-    const token = await sign(payload, JWT_SECRET);
+
+    const token = await sign(payload, JWT_SECRET as string);
 
     // Commit transaction and end session
     await session.commitTransaction();
@@ -105,7 +109,7 @@ export const signIn = async (c: Context) => {
     const payload = { userId: user._id, exp: expiresInSeconds };
 
     // Generate JWT token
-    const token = await sign(payload, JWT_SECRET);
+    const token = await sign(payload, JWT_SECRET as string);
 
     // Return success response with token and user data
 
