@@ -1,33 +1,36 @@
-import { Hono } from 'hono';
+import { Hono } from "hono";
+import authorize from "../../middlewares/auth.middleware";
+import {
+  createSubscription,
+  getUserSubscriptions,
+} from "./subscription.controller";
 
 const subscriptionRoutes = new Hono();
 
+subscriptionRoutes.use("*", authorize);
+
 subscriptionRoutes.get("/", (c) => {
-    return c.json({
-        message: 'Get All Subscriptions',
-    })
+  return c.json({
+    message: "Get All Subscriptions",
+  });
 });
 
 subscriptionRoutes.get("/:id", (c) => {
-    const subscriptionId = c.req.param("id");
+  const subscriptionId = c.req.param("id");
 
-    return c.json({
-      message: `Get Subscription ${subscriptionId} Details by ID`,
-    });
+  return c.json({
+    message: `Get Subscription ${subscriptionId} Details by ID`,
+  });
 });
 
-subscriptionRoutes.post("/", (c) => {
-    return c.json({
-      message: "Create New Subscription",
-    });
-});
+subscriptionRoutes.post("/", createSubscription);
 
 subscriptionRoutes.put("/:id", (c) => {
-    const subscriptionId = c.req.param;
+  const subscriptionId = c.req.param;
 
-    return c.json({
-        message: `Update ${subscriptionId} Subscription`
-    })
+  return c.json({
+    message: `Update ${subscriptionId} Subscription`,
+  });
 });
 
 subscriptionRoutes.delete("/:id", (c) => {
@@ -38,13 +41,7 @@ subscriptionRoutes.delete("/:id", (c) => {
   });
 });
 
-subscriptionRoutes.get("/user/:id", (c) => {
-  const userId = c.req.param("id");
-
-  return c.json({
-    message: `Get All Subscription from User ${userId}`,
-  });
-});
+subscriptionRoutes.get("/user/:id", getUserSubscriptions);
 
 subscriptionRoutes.put("/:id/cancel", (c) => {
   const subscriptionId = c.req.param;

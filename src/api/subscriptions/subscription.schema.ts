@@ -1,6 +1,6 @@
 /**
  * Subscription Schema Definition
- * 
+ *
  * This file defines the Zod schema for subscription data validation. It provides
  * comprehensive validation rules for subscription-related data including:
  * - Basic subscription information (name, price, currency)
@@ -8,7 +8,7 @@
  * - Payment method and status tracking
  * - Date validation with business rules
  * - Cross-field validation for data consistency
- * 
+ *
  * The schema uses Zod's type-safe validation to ensure data integrity
  * throughout the application.
  */
@@ -16,7 +16,7 @@ import { z } from "zod";
 
 /**
  * Main subscription validation schema
- * 
+ *
  * Defines comprehensive validation rules for subscription data with cross-field
  * validation and business rule enforcement.
  */
@@ -32,13 +32,13 @@ export const subscriptionSchema = z
         /^[a-zA-Z0-9\s\-_]+$/, // Allowed characters: letters, numbers, spaces, hyphens, underscores
         "Subscription name can only contain letters, numbers, spaces, hyphens and underscores"
       ),
-    
+
     // Price field with numeric validation and formatting
     price: z
       .number()
       .min(0, "Subscription price must be greater than 0") // Ensure positive pricing
       .transform((val) => Number(val.toFixed(2))), // Rounds to 2 decimal places for currency precision
-    
+
     // Currency field with ISO 4217 standard compliance
     currency: z
       .enum([
@@ -51,13 +51,13 @@ export const subscriptionSchema = z
       ])
       .describe("Currency code in ISO 4217 format") // Documentation for API consumers
       .default("USD"), // Default to USD for new subscriptions
-    
+
     // Billing frequency with common subscription intervals
     frequency: z
       .enum(["daily", "weekly", "monthly", "yearly"])
       .describe("Billing frequency of the subscription") // Clear documentation
       .default("monthly"), // Most subscriptions are monthly by default
-    
+
     // Category field for subscription organization and filtering
     category: z
       .enum([
@@ -75,7 +75,7 @@ export const subscriptionSchema = z
         "other", // Miscellaneous subscriptions
       ])
       .describe("Subscription category"), // Documentation for categorization
-    
+
     // Payment method identification
     paymentMethod: z
       .string()
@@ -86,10 +86,10 @@ export const subscriptionSchema = z
         /^[a-zA-Z0-9\s\-_]+$/, // Alphanumeric with spaces, hyphens, underscores
         "Payment method can only contain letters, numbers, spaces, hyphens and underscores"
       ),
-    
+
     // Subscription status tracking
     status: z.enum(["active", "cancelled", "expired"]).default("active"), // Default to active for new subscriptions
-    
+
     // Start date with future date validation
     startDate: z
       .date()
@@ -105,16 +105,16 @@ export const subscriptionSchema = z
         }
       )
       .transform((date) => new Date(date.setHours(0, 0, 0, 0))), // Normalize to start of day for consistency
-    
+
     // Renewal date - required field for subscription management
     renewalDate: z.date(),
-    
+
     // User reference - typically populated by the authentication system
     user: z.object(),
   })
   .superRefine((data, ctx) => {
     // Cross-field validation for date consistency
-    
+
     // Normalize dates to start of day for accurate comparison
     const normalizedStartDate = new Date(data.startDate.setHours(0, 0, 0, 0));
     const normalizedRenewalDate = new Date(
@@ -145,7 +145,7 @@ export const subscriptionSchema = z
 
 /**
  * TypeScript type inferred from the subscription schema
- * 
+ *
  * This provides type safety throughout the application when working
  * with subscription data. It ensures that any data conforming to this
  * schema will have the correct structure and types.
