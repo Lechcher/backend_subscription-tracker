@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import mongoose from "mongoose";
 import { ZodError } from "zod";
-import { HandlerError } from "../api/core/handlerError";
+import { HandlerError } from "../core/handlerError";
 
 export const registerErrorHandler = (app: Hono) => {
   // Register error handler middleware for the Hono app

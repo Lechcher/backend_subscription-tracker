@@ -1,8 +1,8 @@
 import { type Next, type Context } from "hono";
-import { HandlerError } from "../api/core/handlerError";
+import { HandlerError } from "../core/handlerError";
 import { verify } from "hono/jwt";
 import User from "../api/users/user.model";
-import { JWT_SECRET, NODE_ENV } from "../env";
+import { JWT_SECRET, NODE_ENV } from "../core/env";
 
 if (!JWT_SECRET) {
   throw new HandlerError(

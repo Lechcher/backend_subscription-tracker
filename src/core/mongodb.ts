@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { MONGODB_URI, NODE_ENV } from "../../env";
+import { MONGODB_URI, NODE_ENV } from "./env";
 
 // Check if the database URI is provided, throw an error if not
 if (!MONGODB_URI) {

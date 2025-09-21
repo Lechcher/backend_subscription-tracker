@@ -10,6 +10,8 @@
     "format": "prettier --write 'src/**/*.ts'"
   },
   "dependencies": {
+    "@arcjet/bun": "^1.0.0-beta.11",
+    "@arcjet/inspect": "^1.0.0-beta.11",
     "@hono/zod-validator": "^0.7.2",
     "hono": "^4.9.5",
     "mongodb": "^6.19.0",

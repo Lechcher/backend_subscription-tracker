@@ -1,9 +1,9 @@
 import { type Context } from "hono";
 import mongoose from "mongoose";
 import User from "../users/user.model";
-import { HandlerError } from "../core/handlerError";
+import { HandlerError } from "../../core/handlerError";
 import { sign } from "hono/jwt";
-import { JWT_SECRET, JWT_EXPIRES_IN, NODE_ENV } from "../../env";
+import { JWT_SECRET, JWT_EXPIRES_IN, NODE_ENV } from "../../core/env";
 
 if (!JWT_SECRET) {
   throw new HandlerError(
