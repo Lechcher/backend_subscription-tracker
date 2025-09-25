@@ -5,6 +5,7 @@ import { HandlerError } from "../../core/handlerError";
 import { sign } from "hono/jwt";
 import { JWT_SECRET, JWT_EXPIRES_IN, NODE_ENV } from "../../core/env";
 
+// Check if JWT secret is defined in environment variables
 if (!JWT_SECRET) {
   throw new HandlerError(
     `JWT_SECRET is not defined, please insert into .env or .env.${NODE_ENV}.local`,
@@ -112,7 +113,6 @@ export const signIn = async (c: Context) => {
     const token = await sign(payload, JWT_SECRET as string);
 
     // Return success response with token and user data
-
     return c.json(
       {
         success: true,

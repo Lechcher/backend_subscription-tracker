@@ -7,6 +7,7 @@ import { registerErrorHandler } from "./middlewares/error.middleware";
 import { prettyJSON } from "hono/pretty-json";
 import { NODE_ENV, PORT } from "./core/env";
 import arcjetMiddleware from "./middlewares/arcjet.middleware";
+import workflowRoutes from "./api/workflow/workflow.routes";
 
 const app = new Hono();
 
@@ -18,6 +19,7 @@ app.use(arcjetMiddleware);
 app.route("/api/v1/auth", authRoutes);
 app.route("/api/v1/users", userRoutes);
 app.route("/api/v1/subscriptions", subscriptionRoutes);
+app.route("/api/v1/workflows", workflowRoutes);
 
 app.get("/", (c) => {
   return c.text("Welcome to the Subscription Tracker API!");

@@ -12,24 +12,29 @@ import { subscriptionSchemaType } from "./subscription.schema";
  */
 const subscriptionSchemaModel = new Schema<subscriptionSchemaType>(
   {
+    // Name of the subscription service
     name: {
       type: String,
       required: [true, "Subscription name is required"],
     },
+    // Price of the subscription
     price: {
       type: Number,
       required: [true, "Subscription price is required"],
     },
+    // Currency of the subscription price
     currency: {
       type: String,
       enum: ["USD", "EUR", "GBP", "JPY", "CNY", "VND"],
       default: "USD",
     },
+    // Billing frequency of the subscription
     frequency: {
       type: String,
       enum: ["daily", "weekly", "monthly", "yearly"],
       default: "monthly",
     },
+    // Category of the subscription for organization
     category: {
       type: String,
       enum: [
@@ -48,30 +53,34 @@ const subscriptionSchemaModel = new Schema<subscriptionSchemaType>(
       ],
       required: true,
     },
+    // Payment method used for the subscription
     paymentMethod: {
       type: String,
       required: true,
     },
+    // Current status of the subscription
     status: {
       type: String,
       enum: ["active", "cancelled", "expired"],
       default: "active",
     },
+    // Date when the subscription was first activated
     startDate: {
       type: Date,
-      required: true,
     },
+    // Next renewal date for the subscription
     renewalDate: {
       type: Date,
     },
+    // Reference to the user who owns this subscription
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      index: true,
+      index: true, // Index for faster queries by user
     },
   },
-  { timestamps: true }
+  { timestamps: true } // Automatically adds createdAt and updatedAt fields
 );
 
 /**
@@ -84,6 +93,11 @@ const subscriptionSchemaModel = new Schema<subscriptionSchemaType>(
  * Supported frequencies: daily (1 day), weekly (7 days), monthly (30 days), yearly (365 days)
  */
 subscriptionSchemaModel.pre("save", function (next) {
+  // Set start date to current date if not provided
+  if (!this.startDate) {
+    this.startDate = new Date();
+  }
+
   // Calculate renewal date if not provided
   if (!this.renewalDate) {
     const renewalPeriods = {
